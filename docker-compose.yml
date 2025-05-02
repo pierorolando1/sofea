@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Next.js Frontend Service
+  app:
+    build:
+      context: ./app # Assumes Dockerfile exists in ./app
+      dockerfile: Dockerfile
+    container_name: nextjs_app
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    environment:
+      NODE_ENV: production
+      # Add any other environment variables your Next.js app needs
+      # Example: API_URL=http://biblioteca:8080/api
+    depends_on:
+      - biblioteca # Optional: if frontend directly calls backend by service name during build or runtime startup
+    networks:
+      - app-network
+
+  # Spring Boot Backend Service
+  biblioteca:
+    build:
+      context: ./biblioteca # Assumes Dockerfile exists in ./biblioteca
+      dockerfile: Dockerfile
+    container_name: springboot_biblioteca
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+    networks:
+      - app-network
+
+# Define Networks
+networks:
+  app-network:
+    driver: bridge
